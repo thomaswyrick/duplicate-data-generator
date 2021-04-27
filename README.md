@@ -1,8 +1,12 @@
 # duplicate-data-generator
 This script will create duplicates in known quantities to test record linkage (e.g. MDM) systems.  To further test the fuzzy matching of your record linkage system, the script can trasposition and mistype duplicated columns.  Please note, this script is only a thin wrapper over the existing [Faker](https://github.com/joke2k/faker) library and would be nothing without it.
 
+## Installation
+Download the repository
+pip install -r requirements.txt
+
 ## Usage
-python duplicate_data_generator.py --config dup_data_config --output output.xlsx
+python duplicate_data_generator.py --config dup_data_config.json --output output.xlsx
 
 ## Config File Settings
 ### total_row_cnt
