@@ -1,0 +1,57 @@
+{
+    "total_row_cnt" : 5000,
+    "duplication_rate" : 0.2,
+    "localization" : "en_AU",
+    "columns" : 
+        [
+            {
+                "name" : "first_name",
+                "type" : "first_name",
+                "transposition_chars": 1,
+                "mistype_chars": 1
+            },
+            {
+                "name" : "last_name",
+                "type" : "last_name",
+                "transposition_chars": 1,
+                "mistype_chars": 1
+            },
+            {
+                "name" : "address_ln1",
+                "type" : "street_address",
+                "transposition_chars": 1,
+                "mistype_chars": 1
+            },
+            {
+                "name" : "address_ln2",
+                "type" : "secondary_address"
+            }
+            ,
+            {
+                "name" : "city",
+                "type" : "city"
+            },
+            {
+                "name" : "state",
+                "type" : "state"
+            },
+            {
+                "name" : "zip",
+                "type" : "postcode"
+            },
+            {
+                "name" : "country",
+                "type" : "current_country"
+            },
+            {
+                "name" : "phone",
+                "type" : "phone_number",
+                "mistype_chars": 1
+            },
+            {
+                "name" : "email",
+                "type" : "email",
+                "mistype_chars": 1
+            }
+        ]
+}
