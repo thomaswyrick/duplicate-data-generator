@@ -10,9 +10,9 @@ python duplicate_data_generator.py --config dup_data_config.json --output output
 
 ## Config File Settings
 ### total_row_cnt
-The total number of rows you would like produce.
+The total number of rows you would like produce
 ### duplication_rate
-The known duplication rate of the records to produce.
+The known duplication rate of the records to produce
 ### localization
 See [here](https://faker.readthedocs.io/en/master/locales.html) for a list of possible values
 ### columns
