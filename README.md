@@ -4,8 +4,9 @@ This script will create duplicates in known quantities to test record linkage (e
 Note: this script is only a thin wrapper over the existing [Faker](https://github.com/joke2k/faker) library.
 
 ## Installation
-1. Download the repository
-2. Install the referenced modules with: pip install -r requirements.txt
+1. Install Python 3+
+2. Download the repository
+3. Install the referenced modules with: pip install -r requirements.txt
 
 ## Usage
 python duplicate_data_generator.py --config dup_data_config.json --output output.xlsx
