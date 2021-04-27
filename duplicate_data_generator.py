@@ -62,6 +62,8 @@ def get_fake_string(fake_type, fake_gen):
         return fake_gen.email()
     elif fake_type == 'ssn':
         return fake_gen.ssn()
+    elif fake_type == 'date_of_birth':
+        return str(fake_gen.date_of_birth(minimum_age=18, maximum_age=95))
 
 def transposition_chars(str_to_alter):
     first_char = random.randrange(len(str_to_alter)-1)
@@ -70,6 +72,13 @@ def transposition_chars(str_to_alter):
     tmp = split_str[first_char]
     split_str[first_char] = split_str[second_char]
     split_str[second_char] = tmp
+    str_to_alter = combine(split_str)
+    return str_to_alter
+
+def mistype_chars(str_to_alter):
+    char_to_alter = random.randrange(len(str_to_alter))
+    split_str = split(str_to_alter)
+    split_str[char_to_alter] = random.choice(string.ascii_letters)
     str_to_alter = combine(split_str)
     return str_to_alter
 
@@ -82,12 +91,6 @@ def combine(chars):
         new_str += char
     return new_str
 
-def mistype_chars(str_to_alter):
-    char_to_alter = random.randrange(len(str_to_alter))
-    split_str = split(str_to_alter)
-    split_str[char_to_alter] = random.choice(string.ascii_letters)
-    str_to_alter = combine(split_str)
-    return str_to_alter
 
           
 if __name__ == '__main__':

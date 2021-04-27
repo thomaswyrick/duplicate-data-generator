@@ -1,7 +1,7 @@
 {
     "total_row_cnt" : 5000,
     "duplication_rate" : 0.2,
-    "localization" : "en_AU",
+    "localization" : "en_GB",
     "columns" : 
         [
             {
@@ -32,10 +32,6 @@
                 "type" : "city"
             },
             {
-                "name" : "state",
-                "type" : "state"
-            },
-            {
                 "name" : "zip",
                 "type" : "postcode"
             },
@@ -52,6 +48,16 @@
                 "name" : "email",
                 "type" : "email",
                 "mistype_chars": 1
+            },
+            {
+                "name" : "ssn",
+                "type" : "ssn",
+                "transposition_chars": 1
+            },
+            {
+                "name" : "dob",
+                "type" : "date_of_birth",
+                "transposition_chars": 1
             }
         ]
 }
