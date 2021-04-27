@@ -1,5 +1,7 @@
 # duplicate-data-generator
-This script will create duplicates in known quantities to test record linkage (e.g. MDM) systems.  To further test the fuzzy matching of your record linkage system, the script can trasposition and mistype duplicated columns.  Please note, this script is only a thin wrapper over the existing [Faker](https://github.com/joke2k/faker) library and would be nothing without it.
+This script will create duplicates in known quantities to test record linkage (e.g. MDM) systems.  To further test the fuzzy matching of your record linkage system, the script can trasposition and mistype duplicated columns.  
+
+Note: this script is only a thin wrapper over the existing [Faker](https://github.com/joke2k/faker) library.
 
 ## Installation
 1. Download the repository
@@ -19,7 +21,7 @@ See [here](https://faker.readthedocs.io/en/master/locales.html) for a list of po
 #### name
 The name of the column written to the Excel sheet
 #### type
-Supported types are: "first_name","last_name", "street_address", "secondary_address", "city", "state", "postcode", "current_country", "phone_number", "email"
+Supported types are: "first_name","last_name", "street_address", "secondary_address", "city", "state", "postcode", "current_country", "phone_number", "email", "date_of_birth"
 #### transposition_chars
 The number of characeters to transposition (e.g. switch) within the cell of a column
 #### mistype_chars
