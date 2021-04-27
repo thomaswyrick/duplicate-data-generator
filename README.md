@@ -21,8 +21,8 @@ The name of the column written to the Excel sheet
 #### type
 Supported types are: "first_name","last_name", "street_address", "secondary_address", "city", "state", "postcode", "current_country", "phone_number", "email"
 #### transposition_chars
-The number of characeters to transposition (e.g. switch) within the the cell of the column
+The number of characeters to transposition (e.g. switch) within the cell of a column
 #### mistype_chars
-The number of characeters to mistype within the the cell of the column
+The number of characeters to mistype within the the cell of a column
 
 
