@@ -1,6 +1,5 @@
 import argparse
 import json
-#import math
 import random
 import string
 import pandas as pd
@@ -8,18 +7,21 @@ from faker import Faker
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', help='Path to json config file', dest='config_file_path', required=True)
+    parser.add_argument('--columns', help='column configuration file', dest='column_file_path', required=True)
     parser.add_argument('--output', help='output csv file', dest='output_file_path', required=True)
+    parser.add_argument('--rows', help='the total number of rows to generate', dest='total_row_cnt', type=int, required=True)
+    parser.add_argument('--duprate', help='duplication rate', dest='duplication_rate', type=float, required=True)
+    parser.add_argument('--localization', help='localization', dest='localization', default='en_US', required=False)
     parser.add_argument('--cores', help='the number of cores to use for mulitprocessing', dest='cores', default=1, required=False)
     parser.add_argument('--batchsize', help='the size of each batch to process', dest='batchsize', default=50000, required=False)
-    #TODO: move non-column config from file to command line 
-    args = parser.parse_args() 
+    config = vars(parser.parse_args()) 
 
-    with open(args.config_file_path) as config_file:
-        config = json.load(config_file)
+    with open(config['column_file_path']) as column_file:
+        col_config = json.load(column_file)
 
+    config.update(col_config)
     fake_data = get_fake_data(config)
-    fake_data.to_csv()
+    fake_data.to_csv(config['output_file_path'])
 
 def get_fake_data(config):
     num_of_initial_rows = int(config['total_row_cnt']) - int(config['total_row_cnt'] * config['duplication_rate'])
