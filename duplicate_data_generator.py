@@ -1,6 +1,6 @@
 import argparse
 import json
-import math
+#import math
 import random
 import string
 import pandas as pd
@@ -9,17 +9,23 @@ from faker import Faker
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', help='Path to json config file', dest='config_file_path', required=True)
-    parser.add_argument('--output', help='output xslx file', dest='output_file_path', required=True)
+    parser.add_argument('--output', help='output csv file', dest='output_file_path', required=True)
+    parser.add_argument('--cores', help='the number of cores to use for mulitprocessing', dest='cores', default=1, required=False)
+    parser.add_argument('--batchsize', help='the size of each batch to process', dest='batchsize', default=50000, required=False)
+    #TODO: move non-column config from file to command line 
     args = parser.parse_args() 
 
     with open(args.config_file_path) as config_file:
         config = json.load(config_file)
 
+    fake_data = get_fake_data(config)
+    fake_data.to_csv()
+
+def get_fake_data(config):
     num_of_initial_rows = int(config['total_row_cnt']) - int(config['total_row_cnt'] * config['duplication_rate'])
     num_duplicated_rows = int(config['total_row_cnt']) - num_of_initial_rows
     
     fake_gen = Faker(config['localization'])
-
     initial_fake_data = pd.DataFrame()
 
     for column in config['columns']:
@@ -36,7 +42,7 @@ def main():
                 known_duplicates[column['name']] = known_duplicates[column['name']].apply(transposition_chars)
 
     output_data = initial_fake_data.append(known_duplicates)
-    output_data.to_excel(args.output_file_path)    
+    return output_data
 
 
 def get_fake_string(fake_type, fake_gen):
