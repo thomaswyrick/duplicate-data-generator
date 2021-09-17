@@ -1,7 +1,12 @@
 import argparse
 import json
+import os
+import shutil
 import random
+import uuid
 import string
+from multiprocessing import Pool
+from math import ceil
 import pandas as pd
 from faker import Faker
 
@@ -12,30 +17,59 @@ def main():
     parser.add_argument('--rows', help='the total number of rows to generate', dest='total_row_cnt', type=int, required=True)
     parser.add_argument('--duprate', help='duplication rate', dest='duplication_rate', type=float, required=True)
     parser.add_argument('--localization', help='localization', dest='localization', default='en_US', required=False)
-    parser.add_argument('--cores', help='the number of cores to use for mulitprocessing', dest='cores', default=1, required=False)
-    parser.add_argument('--batchsize', help='the size of each batch to process', dest='batchsize', default=50000, required=False)
+    parser.add_argument('--cpus', help='the number of cpus to use for mulitprocessing', dest='cpus', type=int, default=1, required=False)
+    parser.add_argument('--batchsize', help='the size of each batch to process', dest='batch_size', type=int, default=50000, required=False)
     config = vars(parser.parse_args()) 
 
     with open(config['column_file_path']) as column_file:
         col_config = json.load(column_file)
 
-    config.update(col_config)
-    fake_data = get_fake_data(config)
-    fake_data.to_csv(config['output_file_path'])
+    config.update(col_config) # append column settings to main config dict
 
-def get_fake_data(config):
-    num_of_initial_rows = int(config['total_row_cnt']) - int(config['total_row_cnt'] * config['duplication_rate'])
-    num_duplicated_rows = int(config['total_row_cnt']) - num_of_initial_rows
-    
     fake_gen = Faker(config['localization'])
+    pool = Pool(config['cpus'])
+
+    tmp_dir = './temp' 
+    create_temp_directory(tmp_dir)
+
+    batch_size = config['batch_size']
+    num_batches = ceil(config['total_row_cnt']/batch_size)
+    remaining_rows = config['total_row_cnt']
+
+    for i in range(num_batches):
+        pool.apply_async(create_fake_data_file, args = (config, fake_gen, tmp_dir, batch_size, remaining_rows))
+    pool.close()
+    pool.join()
+    print('fin!')
+
+def create_fake_data_file(config, fake_gen, tmp_dir, batch_size, remaining_rows):
+    if remaining_rows > batch_size:
+        rows_to_process = batch_size
+    else:
+        rows_to_process = remaining_rows
+    remaining_rows = remaining_rows - rows_to_process
+    
+    num_of_initial_rows, num_duplicated_rows = get_row_counts(rows_to_process, config['duplication_rate'])
+    fake_data = get_fake_data(num_of_initial_rows, num_duplicated_rows, config['columns'], fake_gen)
+    temp_file_name = tmp_dir + '/' + str(uuid.uuid4())
+    print('Writing {} rows to file'.format(rows_to_process))
+    fake_data.to_csv(temp_file_name)
+
+
+def create_temp_directory(tmp_dir):
+    if os.path.isdir(tmp_dir):
+        shutil.rmtree(tmp_dir)
+    os.mkdir(tmp_dir)
+
+def get_fake_data(num_of_initial_rows, num_duplicated_rows, columns, fake_gen):
     initial_fake_data = pd.DataFrame()
 
-    for column in config['columns']:
+    for column in columns:
         initial_fake_data[column['name']] = [get_fake_string(column['type'], fake_gen) for x in range(num_of_initial_rows)]
 
     known_duplicates = initial_fake_data.sample(num_duplicated_rows, replace=True)
 
-    for column in config['columns']:
+    for column in columns:
         if 'transposition_chars' in column and column['transposition_chars'] > 0:
             for i in range(column['transposition_chars']):
                 known_duplicates[column['name']] = known_duplicates[column['name']].apply(transposition_chars)
@@ -45,6 +79,11 @@ def get_fake_data(config):
 
     output_data = initial_fake_data.append(known_duplicates)
     return output_data
+
+def get_row_counts(total_row_cnt, duplication_rate):
+    num_of_initial_rows = int(total_row_cnt - int(total_row_cnt * duplication_rate))
+    num_duplicated_rows = int(total_row_cnt - num_of_initial_rows)
+    return num_of_initial_rows,num_duplicated_rows
 
 
 def get_fake_string(fake_type, fake_gen):
