@@ -1,6 +1,8 @@
 import argparse
 import json
 import os
+import glob
+import time
 import shutil
 import random
 import uuid
@@ -13,20 +15,31 @@ from faker import Faker
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--columns', help='column configuration file', dest='column_file_path', required=True)
-    parser.add_argument('--output', help='output csv file', dest='output_file_path', required=True)
+    parser.add_argument('--output', help='output csv file', dest='output_file', required=True)
     parser.add_argument('--rows', help='the total number of rows to generate', dest='total_row_cnt', type=int, required=True)
     parser.add_argument('--duprate', help='duplication rate', dest='duplication_rate', type=float, required=True)
     parser.add_argument('--localization', help='localization', dest='localization', default='en_US', required=False)
     parser.add_argument('--cpus', help='the number of cpus to use for mulitprocessing', dest='cpus', type=int, default=1, required=False)
-    parser.add_argument('--batchsize', help='the size of each batch to process', dest='batch_size', type=int, default=50000, required=False)
+    parser.add_argument('--batchsize', help='the size of each batch to process', dest='batch_size', type=int, default=10000, required=False)
     config = vars(parser.parse_args()) 
 
     with open(config['column_file_path']) as column_file:
         col_config = json.load(column_file)
 
     config.update(col_config) # append column settings to main config dict
-
+    
+    start = time.time()
     fake_gen = Faker(config['localization'])
+    tmp_dir = generate_temp_files(config, fake_gen)
+    output_file = config['output_file']
+    combine_temp_files(tmp_dir, output_file)
+    shutil.rmtree(tmp_dir)
+    end = time.time()
+    print('Elapsed time (sec) : {}'.format(end-start))
+    print('Fin!')
+
+
+def generate_temp_files(config, fake_gen):
     pool = Pool(config['cpus'])
 
     tmp_dir = './temp' 
@@ -40,7 +53,17 @@ def main():
         pool.apply_async(create_fake_data_file, args = (config, fake_gen, tmp_dir, batch_size, remaining_rows))
     pool.close()
     pool.join()
-    print('fin!')
+    return tmp_dir
+
+
+def combine_temp_files(tmp_dir, output_file):
+    if os.path.isfile(output_file):
+        os.remove(output_file)
+    with open(output_file, 'wb') as outfile:
+        for filename in glob.glob(tmp_dir + '/*'):
+            with open(filename, 'rb') as readfile:
+                shutil.copyfileobj(readfile, outfile)
+
 
 def create_fake_data_file(config, fake_gen, tmp_dir, batch_size, remaining_rows):
     if remaining_rows > batch_size:
@@ -50,10 +73,13 @@ def create_fake_data_file(config, fake_gen, tmp_dir, batch_size, remaining_rows)
     remaining_rows = remaining_rows - rows_to_process
     
     num_of_initial_rows, num_duplicated_rows = get_row_counts(rows_to_process, config['duplication_rate'])
-    fake_data = get_fake_data(num_of_initial_rows, num_duplicated_rows, config['columns'], fake_gen)
-    temp_file_name = tmp_dir + '/' + str(uuid.uuid4())
-    print('Writing {} rows to file'.format(rows_to_process))
-    fake_data.to_csv(temp_file_name)
+    try:
+        fake_data = get_fake_data(num_of_initial_rows, num_duplicated_rows, config['columns'], fake_gen)
+        temp_file_name = tmp_dir + '/' + str(uuid.uuid4())
+        print('Writing {} rows to file'.format(rows_to_process))
+        fake_data.to_csv(temp_file_name, header=False)
+    except Exception as e:
+        print('Unexpected error: {}'.format(e))
 
 
 def create_temp_directory(tmp_dir):
@@ -137,7 +163,6 @@ def combine(chars):
     for char in chars:
         new_str += char
     return new_str
-
 
           
 if __name__ == '__main__':
