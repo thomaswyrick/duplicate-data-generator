@@ -10,12 +10,13 @@ import string
 from multiprocessing import Pool
 from math import ceil
 import pandas as pd
+import numpy as np
 from faker import Faker
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--columns', help='column configuration file', dest='column_file_path', required=True)
-    parser.add_argument('--output', help='output csv file', dest='output_file', required=True)
+    parser.add_argument('--column_file', help='column configuration file', dest='column_file_path', required=True)
+    parser.add_argument('--output_name', help='output file name', dest='output_file', required=True)
     parser.add_argument('--rows', help='the total number of rows to generate', dest='total_row_cnt', type=int, required=True)
     parser.add_argument('--duprate', help='duplication rate', dest='duplication_rate', type=float, required=True)
     parser.add_argument('--localization', help='localization', dest='localization', default='en_US', required=False)
@@ -33,11 +34,22 @@ def main():
     tmp_dir = generate_temp_files(config, fake_gen)
     output_file = config['output_file']
     combine_temp_files(tmp_dir, output_file)
+    fix_aggregated_files(config)
     shutil.rmtree(tmp_dir)
     end = time.time()
     print('Elapsed time (sec) : {}'.format(end-start))
     print('Fin!')
 
+def fix_aggregated_files(config):
+    column_headers = ['truth_value']
+    for column in config['columns']:
+        column_headers.append(column['name'])
+
+    main_file = pd.read_csv(config['output_file'], names=column_headers)
+    main_file.drop(main_file.columns[0], axis=1)
+    main_file.index = range(len(main_file.index))
+    main_file.index.name = 'id'
+    main_file.to_csv(config['output_file'])
 
 def generate_temp_files(config, fake_gen):
     pool = Pool(config['cpus'])
@@ -75,6 +87,9 @@ def create_fake_data_file(config, fake_gen, tmp_dir, batch_size, remaining_rows)
     num_of_initial_rows, num_duplicated_rows = get_row_counts(rows_to_process, config['duplication_rate'])
     try:
         fake_data = get_fake_data(num_of_initial_rows, num_duplicated_rows, config['columns'], fake_gen)
+        #fake_data['id'] = [uuid.uuid4() for _ in range(len(fake_data.index))]
+        #fake_data.insert(0, 'truth_value', '')
+        #fake_data['truth_value'] = [uuid.uuid4() for _ in range(len(fake_data.index))]
         temp_file_name = tmp_dir + '/' + str(uuid.uuid4())
         print('Writing {} rows to file'.format(rows_to_process))
         fake_data.to_csv(temp_file_name, header=False)
@@ -91,7 +106,13 @@ def get_fake_data(num_of_initial_rows, num_duplicated_rows, columns, fake_gen):
     initial_fake_data = pd.DataFrame()
 
     for column in columns:
-        initial_fake_data[column['name']] = [get_fake_string(column['type'], fake_gen) for x in range(num_of_initial_rows)]
+        fill_rate = 100
+        if 'fill_rate' in column:
+            fill_rate = column['fill_rate'] * 100
+        initial_fake_data[column['name']] = [get_fake_string(column['type'], fake_gen, fill_rate) for x in range(num_of_initial_rows)]
+
+    initial_fake_data.insert(0, 'truth_value', '')
+    initial_fake_data['truth_value'] = [uuid.uuid4() for _ in range(len(initial_fake_data.index))]
 
     known_duplicates = initial_fake_data.sample(num_duplicated_rows, replace=True)
 
@@ -106,15 +127,21 @@ def get_fake_data(num_of_initial_rows, num_duplicated_rows, columns, fake_gen):
     output_data = initial_fake_data.append(known_duplicates)
     return output_data
 
+
 def get_row_counts(total_row_cnt, duplication_rate):
     num_of_initial_rows = int(total_row_cnt - int(total_row_cnt * duplication_rate))
     num_duplicated_rows = int(total_row_cnt - num_of_initial_rows)
     return num_of_initial_rows,num_duplicated_rows
 
 
-def get_fake_string(fake_type, fake_gen):
+def get_fake_string(fake_type, fake_gen, fill_rate):
+    if random.randrange(100) > fill_rate:
+        return ''
+    gender = np.random.choice(["M", "F"], p=[0.5, 0.5])
+
     if fake_type == 'first_name':
-        return fake_gen.first_name()
+        return fake_gen.first_name_male() if gender=="M" else fake_gen.first_name_female()
+        #return fake_gen.first_name()
     elif fake_type == 'last_name':
         return fake_gen.last_name()
     elif fake_type == 'street_address':
@@ -130,15 +157,22 @@ def get_fake_string(fake_type, fake_gen):
     elif fake_type == 'current_country':
         return fake_gen.current_country()
     elif fake_type == 'phone_number':
-        return fake_gen.phone_number()
+        t = fake_gen.phone_number()
+        if 'x' in t:
+            t = None
+        return t
     elif fake_type == 'email':
         return fake_gen.email()
     elif fake_type == 'ssn':
         return fake_gen.ssn()
+    elif fake_type == 'gender':
+        return gender
     elif fake_type == 'date_of_birth':
-        return str(fake_gen.date_of_birth(minimum_age=18, maximum_age=95))
+        return fake_gen.date_of_birth(minimum_age=18, maximum_age=95).strftime('%m/%d/%Y')
 
 def transposition_chars(str_to_alter):
+    if  str_to_alter == None or len(str_to_alter) < 1:
+        return str_to_alter
     first_char = random.randrange(len(str_to_alter)-1)
     second_char = first_char + 1
     split_str = split(str_to_alter)
@@ -149,6 +183,9 @@ def transposition_chars(str_to_alter):
     return str_to_alter
 
 def mistype_chars(str_to_alter):
+    if len(str_to_alter) < 1 or str_to_alter == None:
+        return str_to_alter
+
     char_to_alter = random.randrange(len(str_to_alter))
     split_str = split(str_to_alter)
     split_str[char_to_alter] = random.choice(string.ascii_letters)
