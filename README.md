@@ -9,23 +9,49 @@ Note: this script is only a thin wrapper over the existing [Faker](https://githu
 3. Install the referenced modules with: pip install -r requirements.txt
 
 ## Usage
-python duplicate_data_generator.py --config dup_data_config.json --output output.xlsx
+usage: duplicate_data_generator.py [-h] --column_file COLUMN_FILE_PATH --output_name OUTPUT_FILE --rows TOTAL_ROW_CNT --duprate DUPLICATION_RATE [--localization LOCALIZATION] [--cpus CPUS] [--batchsize BATCH_SIZE]
 
-## Config File Settings
-### total_row_cnt
+optional arguments:
+  -h, --help            show this help message and exit
+  --column_file COLUMN_FILE_PATH
+                        column configuration file
+  --output_name OUTPUT_FILE
+                        output file name
+  --rows TOTAL_ROW_CNT  the total number of rows to generate
+  --duprate DUPLICATION_RATE
+                        duplication rate
+  --localization LOCALIZATION
+                        localization
+  --cpus CPUS           the number of cpus to use for mulitprocessing
+  --batchsize BATCH_SIZE
+                        the size of each batch to process
+### example
+ python duplicate_data_generator.py --column_file sample_column_files/en_US_columns.json --localization en_US --output out_US.csv --rows 1000000 --duprate .10
+
+## Command Line Parameters
+### column_file
+The file path to json column configuration file
+### output_name
+The csv output file name
+### rows
 The total number of rows you would like produce
-### duplication_rate
+### duprate
 The known duplication rate of the records to produce
 ### localization
-See [here](https://faker.readthedocs.io/en/master/locales.html) for a list of possible values
-### columns
-#### name
+See [here](https://faker.readthedocs.io/en/master/locales.html) for a list of possible values#### name
 The name of the column written to the Excel sheet
-#### type
-Supported types are: "first_name","last_name", "street_address", "secondary_address", "city", "state", "postcode", "current_country", "phone_number", "email", "date_of_birth"
-#### transposition_chars
-The number of characeters to transposition (e.g. switch) within the cell of a column
-#### mistype_chars
-The number of characeters to mistype within the the cell of a column
+
+## Column Configuration File Settings
+The config json file takes an array of Column, which can be defined as:
+### name
+Required.  The name of the column in the generated csv file.
+### type
+Required.  The type of the column.  Supported types are: 
+first_name, last_name, street_address, secondary_address, city, state, postcode, country_code, phone_number, email, gender, date_of_birth
+### transposition_chars
+Not required.  The number of characters to transposition (e.g. switch around).
+### mistype_chars
+Not required.  The number of characters to mistype.  Please note, this just assigns a random key from the keyboard.
+
 
 
