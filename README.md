@@ -46,8 +46,10 @@ The config json file takes an array of Column, which can be defined as:
 Required.  The name of the column in the generated csv file.
 ### type
 Required.  The type of the column.  Supported types are:
- 
+
 first_name, last_name, street_address, secondary_address, city, state, postcode, country_code, phone_number, email, gender, date_of_birth
+### fill_rate
+Not required.  The percentage of rows to populate for the given column.
 ### transposition_chars
 Not required.  The number of characters to transposition (e.g. switch around).
 ### mistype_chars
