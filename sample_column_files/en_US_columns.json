@@ -1,0 +1,60 @@
+{
+    "columns" : 
+        [
+            {
+                "name" : "FirstName",
+                "type" : "first_name",
+                "transposition_chars": 1
+            },
+            {
+                "name" : "LastName",
+                "type" : "last_name",
+                "transposition_chars": 1
+            },
+            {
+                "name" : "AddressLine1",
+                "type" : "street_address",
+                "transposition_chars": 1,
+                "mistype_chars": 1
+            },
+            {
+                "name" : "City",
+                "type" : "city"
+            },
+            {
+                "name" : "State",
+                "type" : "state"
+            },
+            {
+                "name" : "PostalCode",
+                "type" : "postcode"
+            },
+            {
+                "name" : "Country",
+                "type" : "current_country"
+            },
+            {
+                "name" : "Phone",
+                "type" : "phone_number",
+                "fill_rate" : 0.9,
+                "mistype_chars": 1
+            },
+            {
+                "name" : "Email",
+                "type" : "email",
+                "fill_rate" : 0.3,
+                "mistype_chars": 1
+            },
+            {
+                "name" : "SSN",
+                "type" : "ssn",
+                "fill_rate" : 0.4,
+                "transposition_chars": 1
+            },
+            {
+                "name" : "Date of Birth",
+                "type" : "date_of_birth",
+                "fill_rate" : 0.8
+            }
+        ]
+}
