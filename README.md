@@ -38,15 +38,15 @@ The total number of rows you would like produce
 ### duprate
 The known duplication rate of the records to produce
 ### localization
-See [here](https://faker.readthedocs.io/en/master/locales.html) for a list of possible values#### name
-The name of the column written to the Excel sheet
+See [here](https://faker.readthedocs.io/en/master/locales.html) for a list of possible values
 
 ## Column Configuration File Settings
 The config json file takes an array of Column, which can be defined as:
 ### name
 Required.  The name of the column in the generated csv file.
 ### type
-Required.  The type of the column.  Supported types are: 
+Required.  The type of the column.  Supported types are:
+ 
 first_name, last_name, street_address, secondary_address, city, state, postcode, country_code, phone_number, email, gender, date_of_birth
 ### transposition_chars
 Not required.  The number of characters to transposition (e.g. switch around).
