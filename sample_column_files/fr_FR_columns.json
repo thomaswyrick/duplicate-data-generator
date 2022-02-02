@@ -25,7 +25,7 @@
                 "type" : "city"
             },
             {
-                "name" : "zip",
+                "name" : "postcode",
                 "type" : "postcode"
             },
             {
