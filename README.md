@@ -8,25 +8,18 @@ Note: this script is only a thin wrapper over the existing [Faker](https://githu
 2. Download the repository
 3. Install the referenced modules with: pip install -r requirements.txt
 
-## Usage
-usage: duplicate_data_generator.py [-h] --column_file COLUMN_FILE_PATH --output_name OUTPUT_FILE --rows TOTAL_ROW_CNT --duprate DUPLICATION_RATE [--localization LOCALIZATION] [--cpus CPUS] [--batchsize BATCH_SIZE]
+## Usage Example
+python duplicate_data_generator.py --column_file sample_column_files/en_US_columns.json --localization en_US --output out_US.csv --rows 1000000 --duprate .10
 
-optional arguments:
-  -h, --help            show this help message and exit
-  --column_file COLUMN_FILE_PATH
-                        column configuration file
-  --output_name OUTPUT_FILE
-                        output file name
-  --rows TOTAL_ROW_CNT  the total number of rows to generate
-  --duprate DUPLICATION_RATE
-                        duplication rate
-  --localization LOCALIZATION
-                        localization
-  --cpus CPUS           the number of cpus to use for mulitprocessing
-  --batchsize BATCH_SIZE
-                        the size of each batch to process
-### example
- python duplicate_data_generator.py --column_file sample_column_files/en_US_columns.json --localization en_US --output out_US.csv --rows 1000000 --duprate .10
+### Arguments
+  --help show this help message and exit
+  --column_file column configuration file
+  --output_name output file name
+  --rows the total number of rows to generate
+  --duprate duplication rate
+  --localization localization
+  --cpus the number of cpus to use for mulitprocessing
+  --batchsize the size of each batch to process
 
 ## Command Line Parameters
 ### column_file
