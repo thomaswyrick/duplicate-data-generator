@@ -25,17 +25,17 @@ See [here](https://faker.readthedocs.io/en/master/locales.html) for a list of po
 
 ## Column Configuration File Settings
 The config json file takes an array of Column, which can be defined as:
-### name (Required)
+#### name (Required)
 The name of the column in the generated csv file.
-### type (Required)
+#### type (Required)
 The type of the column.  Supported types are:
 
 first_name, last_name, street_address, secondary_address, city, state, postcode, country_code, phone_number, email, gender, date_of_birth
-### fill_rate (Not Required)
+#### fill_rate (Not Required)
 The percentage of rows to populate for the given column.
-### transposition_chars (Not Required)
+#### transposition_chars (Not Required)
 The number of characters to transposition (e.g. switch around).
-### mistype_chars (Not Required)
+#### mistype_chars (Not Required)
 The number of characters to mistype.  Please note, this just assigns a random key from the keyboard.
 
 
