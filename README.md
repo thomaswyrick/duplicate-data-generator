@@ -1,5 +1,5 @@
 # duplicate-data-generator
-This script will create duplicates in known quantities to test record linkage (e.g. MDM) systems.  To further test the fuzzy matching of your record linkage system, the script can trasposition and mistype duplicated columns.  
+This script will create duplicates in known quantities for testing record linkage (e.g. MDM) systems.  To test fuzzy matching, it can optionally transposition and mistype duplicated columns.
 
 Note: this script is only a thin wrapper over the existing [Faker](https://github.com/joke2k/faker) library.
 
