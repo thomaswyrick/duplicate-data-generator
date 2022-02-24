@@ -12,15 +12,15 @@ Note: this script is only a thin wrapper over the existing [Faker](https://githu
 python duplicate_data_generator.py --column_file sample_column_files/en_US_columns.json --localization en_US --output out_US.csv --rows 1000000 --duprate .10
 
 ## Command Line Parameters
-### column_file
+#### column_file
 The file path to json column configuration file
-### output_name
+#### output_name
 The csv output file name
-### rows
+#### rows
 The total number of rows you would like produce
-### duprate
+#### duprate
 The known duplication rate of the records to produce
-### localization
+#### localization
 See [here](https://faker.readthedocs.io/en/master/locales.html) for a list of possible values
 
 ## Column Configuration File Settings
