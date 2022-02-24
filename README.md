@@ -11,16 +11,6 @@ Note: this script is only a thin wrapper over the existing [Faker](https://githu
 ## Usage Example
 python duplicate_data_generator.py --column_file sample_column_files/en_US_columns.json --localization en_US --output out_US.csv --rows 1000000 --duprate .10
 
-### Arguments
-  --help show this help message and exit
-  --column_file column configuration file
-  --output_name output file name
-  --rows the total number of rows to generate
-  --duprate duplication rate
-  --localization localization
-  --cpus the number of cpus to use for mulitprocessing
-  --batchsize the size of each batch to process
-
 ## Command Line Parameters
 ### column_file
 The file path to json column configuration file
