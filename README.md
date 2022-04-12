@@ -9,7 +9,7 @@ Note: this script is only a thin wrapper over the existing [Faker](https://githu
 3. Install the referenced modules with: pip install -r requirements.txt
 
 ## Usage Example
-python duplicate_data_generator.py --column_file sample_column_files/en_US_columns.json --localization en_US --output out_US.csv --rows 1000000 --duprate .10
+python duplicate_data_generator.py --column_file sample_column_files/en_US_columns.json --localization en_US --output sample_data_files/US_data.csv --rows 100000 --duprate .10
 
 ## Command Line Parameters
 #### column_file
