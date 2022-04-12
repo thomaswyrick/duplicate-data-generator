@@ -13,6 +13,7 @@ import pandas as pd
 import numpy as np
 from faker import Faker
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--column_file', help='column configuration file', dest='column_file_path', required=True)
@@ -22,7 +23,7 @@ def main():
     parser.add_argument('--localization', help='localization', dest='localization', default='en_US', required=False)
     parser.add_argument('--cpus', help='the number of cpus to use for mulitprocessing', dest='cpus', type=int, default=1, required=False)
     parser.add_argument('--batchsize', help='the size of each batch to process', dest='batch_size', type=int, default=10000, required=False)
-    config = vars(parser.parse_args()) 
+    config = vars(parser.parse_args())
 
     with open(config['column_file_path']) as column_file:
         col_config = json.load(column_file)
@@ -87,9 +88,6 @@ def create_fake_data_file(config, fake_gen, tmp_dir, batch_size, remaining_rows)
     num_of_initial_rows, num_duplicated_rows = get_row_counts(rows_to_process, config['duplication_rate'])
     try:
         fake_data = get_fake_data(num_of_initial_rows, num_duplicated_rows, config['columns'], fake_gen)
-        #fake_data['id'] = [uuid.uuid4() for _ in range(len(fake_data.index))]
-        #fake_data.insert(0, 'truth_value', '')
-        #fake_data['truth_value'] = [uuid.uuid4() for _ in range(len(fake_data.index))]
         temp_file_name = tmp_dir + '/' + str(uuid.uuid4())
         print('Writing {} rows to file'.format(rows_to_process))
         fake_data.to_csv(temp_file_name, header=False)
@@ -124,7 +122,7 @@ def get_fake_data(num_of_initial_rows, num_duplicated_rows, columns, fake_gen):
             for i in range(column['mistype_chars']):
                 known_duplicates[column['name']] = known_duplicates[column['name']].apply(transposition_chars)
 
-    output_data = initial_fake_data.append(known_duplicates)
+    output_data = pd.concat([initial_fake_data, known_duplicates])
     return output_data
 
 
@@ -201,6 +199,5 @@ def combine(chars):
         new_str += char
     return new_str
 
-          
 if __name__ == '__main__':
     main()
