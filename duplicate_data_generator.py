@@ -11,6 +11,7 @@ from multiprocessing import Pool
 from math import ceil
 import pandas as pd
 import numpy as np
+import exrex
 from faker import Faker
 
 
@@ -104,10 +105,25 @@ def get_fake_data(num_of_initial_rows, num_duplicated_rows, columns, fake_gen):
     initial_fake_data = pd.DataFrame()
 
     for column in columns:
-        fill_rate = 100
+        if 'type' in column:
+            column_type = column['type']
+        else:
+            raise Exception('Missing Column Type')
+
+        
         if 'fill_rate' in column:
             fill_rate = column['fill_rate'] * 100
-        initial_fake_data[column['name']] = [get_fake_string(column['type'], fake_gen, fill_rate) for x in range(num_of_initial_rows)]
+        else:
+            fill_rate = 100
+        
+        str_format = ''
+        if column_type == 'formatted_string':
+            if 'str_format' in column:
+                str_format = column['str_format']
+            else:
+                raise Exception('formatted_string missing str_format')
+
+        initial_fake_data[column['name']] = [get_fake_string(column_type, fake_gen, fill_rate, str_format) for x in range(num_of_initial_rows)]
 
     initial_fake_data.insert(0, 'truth_value', '')
     initial_fake_data['truth_value'] = [uuid.uuid4() for _ in range(len(initial_fake_data.index))]
@@ -132,7 +148,7 @@ def get_row_counts(total_row_cnt, duplication_rate):
     return num_of_initial_rows,num_duplicated_rows
 
 
-def get_fake_string(fake_type, fake_gen, fill_rate):
+def get_fake_string(fake_type, fake_gen, fill_rate, str_format):
     if random.randrange(100) > fill_rate:
         return ''
     gender = np.random.choice(["M", "F"], p=[0.5, 0.5])
@@ -167,6 +183,9 @@ def get_fake_string(fake_type, fake_gen, fill_rate):
         return gender
     elif fake_type == 'date_of_birth':
         return fake_gen.date_of_birth(minimum_age=18, maximum_age=95).strftime('%m/%d/%Y')
+    elif fake_type == 'formatted_string':
+        return fake_gen.pystr_format(str_format)
+
 
 def transposition_chars(str_to_alter):
     if  str_to_alter == None or len(str_to_alter) < 1:

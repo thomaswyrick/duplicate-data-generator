@@ -55,6 +55,11 @@
                 "name" : "Date of Birth",
                 "type" : "date_of_birth",
                 "fill_rate" : 0.8
+            },
+            {
+                "name" : "Drivers License",
+                "type" : "formatted_string",
+                "str_format" : "??-######"
             }
         ]
 }

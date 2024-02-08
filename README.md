@@ -30,7 +30,9 @@ The name of the column in the generated csv file.
 #### type (Required)
 The type of the column.  Supported types are:
 
-first_name, last_name, street_address, secondary_address, city, state, postcode, country_code, phone_number, email, gender, date_of_birth
+first_name, last_name, street_address, secondary_address, city, state, postcode, country_code, phone_number, email, gender, date_of_birth, formatted_string
+
+For formatted_str, an additional property "str_format" is required. It uses the following syntax: "??-####" -> "AB-1234"
 #### fill_rate (Not Required)
 The percentage of rows to populate for the given column.
 #### transposition_chars (Not Required)
