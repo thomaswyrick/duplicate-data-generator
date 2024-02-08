@@ -157,6 +157,8 @@ def get_fake_string(fake_type, fake_gen, fill_rate, str_format):
         #return fake_gen.first_name()
     elif fake_type == 'last_name':
         return fake_gen.last_name()
+    elif fake_type == 'company_name':
+        return fake_gen.company()
     elif fake_type == 'street_address':
         return fake_gen.street_address()
     elif fake_type == 'secondary_address':
