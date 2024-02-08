@@ -11,7 +11,6 @@ from multiprocessing import Pool
 from math import ceil
 import pandas as pd
 import numpy as np
-import exrex
 from faker import Faker
 
 
