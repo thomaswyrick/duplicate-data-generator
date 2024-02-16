@@ -31,8 +31,7 @@ def main():
     config.update(col_config) # append column settings to main config dict
     
     start = time.time()
-    fake_gen = Faker(config['localization'])
-    tmp_dir = generate_temp_files(config, fake_gen)
+    tmp_dir = generate_temp_files(config)
     output_file = config['output_file']
     combine_temp_files(tmp_dir, output_file)
     fix_aggregated_files(config)
@@ -52,7 +51,7 @@ def fix_aggregated_files(config):
     main_file.index.name = 'id'
     main_file.to_csv(config['output_file'])
 
-def generate_temp_files(config, fake_gen):
+def generate_temp_files(config):
     pool = Pool(config['cpus'])
 
     tmp_dir = './temp' 
@@ -63,7 +62,7 @@ def generate_temp_files(config, fake_gen):
     remaining_rows = config['total_row_cnt']
 
     for i in range(num_batches):
-        pool.apply_async(create_fake_data_file, args = (config, fake_gen, tmp_dir, batch_size, remaining_rows))
+        pool.apply_async(create_fake_data_file, args = (config, tmp_dir, batch_size, remaining_rows))
     pool.close()
     pool.join()
     return tmp_dir
@@ -78,7 +77,8 @@ def combine_temp_files(tmp_dir, output_file):
                 shutil.copyfileobj(readfile, outfile)
 
 
-def create_fake_data_file(config, fake_gen, tmp_dir, batch_size, remaining_rows):
+def create_fake_data_file(config, tmp_dir, batch_size, remaining_rows):
+    fake_gen = Faker(config['localization'])
     if remaining_rows > batch_size:
         rows_to_process = batch_size
     else:
@@ -86,6 +86,8 @@ def create_fake_data_file(config, fake_gen, tmp_dir, batch_size, remaining_rows)
     remaining_rows = remaining_rows - rows_to_process
     
     num_of_initial_rows, num_duplicated_rows = get_row_counts(rows_to_process, config['duplication_rate'])
+    print(num_of_initial_rows)
+    print(num_duplicated_rows)
     try:
         fake_data = get_fake_data(num_of_initial_rows, num_duplicated_rows, config['columns'], fake_gen)
         temp_file_name = tmp_dir + '/' + str(uuid.uuid4())
